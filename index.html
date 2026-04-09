@@ -1,34 +1,22 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Full Screen Door Reveal</title>
-
     <style>
-
         :root {
             --door-width: 300px;
             --door-height: 800px;
             --anim-speed: 1.5s;
         }
 
-
-
         @media (max-width: 600px) {
             :root {
                 --door-width: 50vw;
-                --door-height: 70vh;
+                --door-height: 80vh;
             }
-
         }
-
-
 
         body, html {
             margin: 0;
@@ -36,18 +24,13 @@
             width: 100%;
             height: 100%;
             background-image: url("doorback.png");
-			/* Crucial: Shows the WHOLE image without cropping */
-			background-size: contain;
+            background-size: contain;
             font-family: 'Segoe UI', sans-serif;
             -webkit-tap-highlight-color: transparent;
-            /* Initially hidden to prevent scrolling before open */
             overflow: hidden; 
         }
 
-
-
-        /* Container for the 3D scene */
-
+        /* --- DOOR STYLES --- */
         .perspective-container {
             position: fixed;
             top: 0;
@@ -61,8 +44,6 @@
             z-index: 100;
         }
 
-
-
         .door-frame {
             position: relative;
             width: calc(var(--door-width) * 2);
@@ -70,8 +51,6 @@
             transform-style: preserve-3d;
             cursor: pointer;
         }
-
-
 
         .door {
             position: absolute;
@@ -84,192 +63,119 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
+        .left-door { left: 0; background-image: url('leftdoorhalf.png'); transform-origin: left; }
+        .right-door { right: 0; background-image: url('rightdoorhalf.png'); transform-origin: right; }
 
+        .open .left-door { transform: rotateY(-140deg); opacity: 0; }
+        .open .right-door { transform: rotateY(140deg); opacity: 0; }
+        .open .door-frame { transform: scale(3); pointer-events: none; }
 
-        .left-door {
-            left: 0;
-            background-image: url('leftdoorhalf.png');
-            transform-origin: left;
-        }
-
-
-
-        .right-door {
-            right: 0;
-            background-image: url('rightdoorhalf.png');
-            transform-origin: right;
-        }
-
+        /* --- CONTENT PAGE --- */
         .card-page {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-			background-color:#fff5e9;
-            /*background: url("insidebackground.png") no-repeat center/cover;*/
-			background-size: contain;
+            background-color:#fff5e9;
             z-index: 1;
             opacity: 0;
             visibility: hidden;
-            overflow-y: auto; /* Enable scrolling */
+            overflow-y: auto;
             transition: opacity 1s ease-in-out;
             box-sizing: border-box;
         }
 
+        .reveal-page .card-page { opacity: 1; visibility: visible; }
+        body.scroll-ready { overflow: auto; }
+        .content-wrap { max-width: 800px; margin: 0 auto; text-align: center; color: #333; }
 
-        /* Content Styling */
-
-        .content-wrap {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-            color: #333;
-        }
-		
-
-        .spacer { height: 100vh; background: #f9f9f9; margin-top: 50px; display: flex; align-items: center; justify-content: center; }
-
-
-
-        /* --- OPEN STATES --- */
-
-
-
-        /* Doors Swing */
-
-        .open .left-door { transform: rotateY(-140deg); opacity: 0; }
-
-        .open .right-door { transform: rotateY(140deg); opacity: 0; }
-
-
-
-        /* Frame Zooms In */
-
-        .open .door-frame { transform: scale(3); pointer-events: none; }
-
-
-
-        /* Reveal Webpage */
-
-        .reveal-page .card-page {
-
-            opacity: 1;
-
-            visibility: visible;
-
+        /* --- PETAL STYLES --- */
+        .petal {
+            position: fixed;
+            top: -50px;
+            z-index: 99; /* Above content, below opening doors if needed */
+            pointer-events: none;
+            border-radius: 150% 0 150% 0; /* Leaf/Petal shape */
+            opacity: 0.8;
         }
 
-
-
-        /* Allow Body Scroll once page is revealed */
-
-        body.scroll-ready {
-
-            overflow: auto;
-
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
-
-
-
     </style>
-
 </head>
-
 <body>
 
-
-
-   <div class="perspective-container" id="doorsContainer">
-
+    <div class="perspective-container" id="doorsContainer">
         <div class="door-frame" id="doorWrapper">
-
             <div class="door left-door"></div>
-
             <div class="door right-door"></div>
-
         </div>
-
     </div>
-
-
 
     <div class="card-page" id="mainContent">
-
         <div class="content-wrap">
-
-			<div class="main">
-			<img src="firstcard.png" style="width: 100%; padding-bottom:5%;">
-			</div>
-
-			<div class="second">
-			<img src="shlok.png" style="width: 100%;">
-					
-
-			</div>
-
-			 <div class="names-slide">
-
-				<img src="names.png" style="width: 100%; padding-top:5%; padding-bottom:5%;">	
-
-			</div>
-			<div class="forth">
-				<img src="names.png" style="width: 100%;">	
-			</div>
-			
-            <div class="fifth" style=" padding-top:5%;">
-				<img src="5.png" style="width: 100%;">	
-			</div>
-
-         
+            <div class="main"><img src="firstcard.png" style="width: 100%; padding-bottom:5%;"></div>
+            <div class="second"><img src="shlok.png" style="width: 100%;"></div>
+            <div class="names-slide"><img src="names.png" style="width: 100%; padding-top:5%; padding-bottom:5%;"></div>
+            <div class="forth"><img src="names.png" style="width: 100%;"></div>
+            <div class="fifth" style="padding-top:5%;"><img src="5.png" style="width: 100%;"></div>
         </div>
-
     </div>
 
-
-
     <script>
-
         const wrapper = document.getElementById('doorWrapper');
-
         const container = document.getElementById('doorsContainer');
-
         const body = document.body;
+        const colors = ['#ffd65e', '#ff9900', '#ffb4b4', '#660000']; // Petal colors
 
+        function createPetals() {
+            // Number of petals to create over 5 seconds
+            const totalPetals = 70; 
+            
+            for (let i = 0; i < totalPetals; i++) {
+                // Spreading the creation over 5000ms (5 seconds)
+                setTimeout(() => {
+                    const p = document.createElement('div');
+                    p.className = 'petal';
+                    
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    p.style.backgroundColor = randomColor;
+                    
+                    const size = (Math.random() * 10 + 10) + 'px';
+                    p.style.width = size;
+                    p.style.height = size;
+                    p.style.left = Math.random() * 100 + 'vw';
+                    
+                    const duration = (Math.random() * 3 + 3) + 's';
+                    p.style.animation = `fall ${duration} linear forwards`;
+                    
+                    document.body.appendChild(p);
 
+                    // Clean up DOM after animation finishes
+                    setTimeout(() => p.remove(), 6000);
+                }, i * (5000 / totalPetals)); 
+            }
+        }
 
         wrapper.addEventListener('click', () => {
-
-            // 1. Start the door animation
-
+            // 1. Start animations
             wrapper.classList.add('open');
-
-            
-
-            // 2. Reveal the webpage underneath
-
             body.classList.add('reveal-page');
 
+            // 2. Trigger petals
+            createPetals();
 
-
-            // 3. After doors finish swinging and fading (1.5s), 
-
-            //    remove the door container and enable scrolling.
-
+            // 3. Clean up door container
             setTimeout(() => {
-
                 container.style.display = 'none';
-
                 body.classList.add('scroll-ready');
-
             }, 1500); 
-
         });
-
     </script>
-
-
-
 </body>
-
 </html>

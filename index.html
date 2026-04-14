@@ -94,9 +94,9 @@
         .petal {
             position: fixed;
             top: -50px;
-            z-index: 99; /* Above content, below opening doors if needed */
+            z-index: 99; 
             pointer-events: none;
-            border-radius: 150% 0 150% 0; /* Leaf/Petal shape */
+            border-radius: 150% 0 150% 0;
             opacity: 0.8;
         }
 
@@ -110,6 +110,8 @@
 </head>
 <body>
 
+    <audio id="inviteMusic" src="marathitrack.mp3" preload="auto" loop></audio>
+
     <div class="perspective-container" id="doorsContainer">
         <div class="door-frame" id="doorWrapper">
             <div class="door left-door"></div>
@@ -121,8 +123,9 @@
         <div class="content-wrap">
             <div class="main"><img src="firstcard.png" style="width: 100%;"></div>
             <div class="second"><img src="shlok.png" style="width: 100%;"></div>
+            <div class="third"><img src="dates.png" style="width: 100%;"></div>
             <div class="names-slide"><img src="names.png" style="width: 100%;"></div>
-            <div class="fifth" style=""><img src="5.png" style="width: 100%;"></div>
+            <div class="fifth"><img src="last.png" style="width: 100%;"></div>
         </div>
     </div>
 
@@ -130,14 +133,13 @@
         const wrapper = document.getElementById('doorWrapper');
         const container = document.getElementById('doorsContainer');
         const body = document.body;
-        const colors = ['#ffd65e', '#ff9900', '#ffb4b4', '#ffffff']; // Petal colors
+        const colors = ['#ffd65e', '#ff9900', '#ffb4b4', '#ffffff']; 
+        const audio = document.getElementById('inviteMusic');
 
         function createPetals() {
-            // Number of petals to create over 5 seconds
             const totalPetals = 70; 
             
             for (let i = 0; i < totalPetals; i++) {
-                // Spreading the creation over 5000ms (5 seconds)
                 setTimeout(() => {
                     const p = document.createElement('div');
                     p.className = 'petal';
@@ -155,21 +157,28 @@
                     
                     document.body.appendChild(p);
 
-                    // Clean up DOM after animation finishes
                     setTimeout(() => p.remove(), 6000);
                 }, i * (5000 / totalPetals)); 
             }
         }
 
         wrapper.addEventListener('click', () => {
-            // 1. Start animations
+            // 1. Play Audio immediately on click (to satisfy browser policies)
+            if (audio) {
+			 audio.currentTime = 39;
+                audio.play().catch(error => {
+                    console.log("Audio playback failed:", error);
+                });
+            }
+
+            // 2. Start door animations
             wrapper.classList.add('open');
             body.classList.add('reveal-page');
 
-            // 2. Trigger petals
+            // 3. Trigger petals
             createPetals();
 
-            // 3. Clean up door container
+            // 4. Clean up door container after animation finishes
             setTimeout(() => {
                 container.style.display = 'none';
                 body.classList.add('scroll-ready');
